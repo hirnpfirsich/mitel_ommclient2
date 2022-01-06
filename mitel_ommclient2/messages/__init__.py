@@ -75,7 +75,7 @@ class Response:
         """
 
         if self.errCode is not None:
-            raise exception_classes.get(self.errCode, OMResponseException)()
+            raise exception_classes.get(self.errCode, OMResponseException)(response=self)
 
     @property
     def seq(self):
