@@ -2,6 +2,8 @@
 
 from xml.dom.minidom import getDOMImplementation, parseString
 
+from ..exceptions import exception_classes, OMResponseException
+
 
 class Request:
     """
@@ -57,6 +59,23 @@ class Response:
         self.name = name
         self.attrs = attrs
         self.childs = childs
+
+    def raise_on_error(self):
+        """
+            Raises an exception if the response contains an error.
+
+            Usage::
+
+                >>> try:
+                >>>     r.raise_on_error()
+                >>> except mitel_ommclient2.exceptions.EAuth as e:
+                >>>     print("We don't care about authentication!")
+
+            See children of :class:`mitel_ommclient2.exceptions.OMResponseException` for all possible exceptions.
+        """
+
+        if self.errCode is not None:
+            raise exception_classes.get(self.errCode, OMResponseException)()
 
     @property
     def seq(self):
