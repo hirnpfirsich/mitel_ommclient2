@@ -39,7 +39,7 @@ class Session:
         """
 
         while True:
-            r = self.connection.recv()
+            r = self._connection.recv()
             if r is not None:
                 return r
             sleep(0.1)
@@ -75,7 +75,7 @@ class Session:
         """
 
         message = messages.construct(request)
-        self.connection.send(message)
+        self._connection.send(message)
 
         res = self._wait_for_respose()
         return messages.parse(res)
