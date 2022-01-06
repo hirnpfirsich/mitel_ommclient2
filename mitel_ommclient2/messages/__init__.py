@@ -97,9 +97,8 @@ class Response:
     def maxLen(self):
         return self.attrs.get("maxLen")
 
-
+from .getaccount import GetAccount, GetAccountResp
 from .ping import Ping, PingResp
-
 
 def construct(request):
     """
@@ -123,6 +122,7 @@ def construct(request):
 
 def _response_type_by_name(name):
     response_types = [
+        GetAccountResp,
         PingResp,
     ]
 

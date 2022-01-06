@@ -37,6 +37,18 @@ class OMMClient2:
         else:
             self.session = session
 
+    def get_account(self, id):
+        """
+            Get account
+
+            :param id: User id
+        """
+
+        r = self.session.request(message.GetAccount(id))
+        r.raise_on_error()
+
+        return r.account[0]
+
     def ping(self):
         """
             Is OMM still there?
