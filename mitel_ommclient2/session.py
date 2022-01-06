@@ -58,11 +58,9 @@ class Session:
             self._connection.connect()
 
             # Login
-            self._connection.send(messages.Open(self.username, self.password))
+            r = self.request(messages.Open(self.username, self.password))
 
-            res = self._wait_for_respose()
-
-            res.raise_on_error()
+            r.raise_on_error()
 
     def request(self, request):
         """
