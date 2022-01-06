@@ -27,7 +27,7 @@ class Session:
         self.port = port
         self.connection_class = connection_class
         if self.connection_class is None:
-            self.connection_class = connection.SSLConnection
+            self.connection_class = connection.Connection
 
         self._connection = None
 

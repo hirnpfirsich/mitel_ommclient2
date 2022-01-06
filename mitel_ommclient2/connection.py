@@ -80,6 +80,10 @@ class SSLConnection(Connection):
     """
         Establishes a secure connection to the OM Application XML Interface
 
+        Please not that this class might be useless on your system since new
+        versions of OpenSSL don't ship with TLVv1.2 or lower anymore which are
+        the protocols supported by OMM.
+
         :param host: Hostname or IP address of OMM
         :param port: Port of the OM Application XML ssl TCP port
 
