@@ -23,3 +23,7 @@ r = c.session.request(mitel_ommclient2.messages.DictRequest("Ping", {"timeStamp"
 ```
 
 Consult class documentation for more in depth examples and options.
+
+## Attribution
+
+This software is inspired by `python-mitel` by Thomas and n-st.
