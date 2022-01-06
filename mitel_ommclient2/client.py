@@ -44,9 +44,10 @@ class OMMClient2:
             :param id: User id
         """
 
-        r = self.session.request(message.GetAccount(id))
+        r = self.session.request(messages.GetAccount(id))
         r.raise_on_error()
-
+        if r.account is None:
+            return None
         return r.account[0]
 
     def ping(self):

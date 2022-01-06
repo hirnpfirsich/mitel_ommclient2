@@ -24,4 +24,4 @@ class GetAccount(Request):
 class GetAccountResp(Response):
     @property
     def account(self):
-        return self.attrs.get("account")
+        return self.childs.get("account")
