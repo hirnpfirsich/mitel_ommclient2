@@ -22,7 +22,9 @@ class Connection:
         self._host = host
         self._port = port
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._recv_buffer = ""
+        self._recv_buffer = b""
+
+        self._socket.settimeout(3)
 
     def connect(self):
         """
@@ -49,21 +51,26 @@ class Connection:
 
         data = b""
         while True:
-            new_data = self._socket.recv(65536)
-            if new_data is not None:
-                data += new_data
-            else:
+            try:
+                new_data = self._socket.recv(1024)
+            except TimeoutError:
                 break
-        self._recv_buffer += data.decode("utf-8")
 
-        if "\0" not in self._recv_buffer:
+            data += new_data
+
+            if b"\0" in new_data:
+                break
+
+        self._recv_buffer += data
+
+        if b"\0" not in self._recv_buffer:
             # no new messages
             return None
 
-        message, buffer = self._recv_buffer.split("\0", 1)
+        message, buffer = self._recv_buffer.split(b"\0", 1)
         self._recv_buffer = buffer
 
-        return message
+        return message.decode("utf-8")
 
     def close(self):
         """
