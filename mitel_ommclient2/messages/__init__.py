@@ -98,6 +98,7 @@ class Response:
         return self.attrs.get("maxLen")
 
 from .getaccount import GetAccount, GetAccountResp
+from .open import Open, OpenResp
 from .ping import Ping, PingResp
 
 def construct(request):
