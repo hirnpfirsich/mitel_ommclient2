@@ -50,6 +50,18 @@ class OMMClient2:
             return None
         return r.account[0]
 
+    def get_pp_dev(self, ppn):
+        """
+            Get PP device
+
+            :param id: Device id
+        """
+        r = self.session.request(messages.GetPPDev(ppn))
+        r.raise_on_error()
+        if r.pp is None:
+            return None
+        return r.pp[0]
+
     def ping(self):
         """
             Is OMM still there?
