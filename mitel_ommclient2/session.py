@@ -13,6 +13,7 @@ class Session:
         :param username: Username
         :param password: Password
         :param port: Port
+        :param ommsync: If True login as OMM-Sync client. Some operations in OMM-Sync mode might lead to destroy DECT paring.
         :param connection_class: One of :class:`mitel_ommclient2.connection.Connection` or :class:`mitel_ommclient2.connection.SSLConnection`
 
         Usage::
@@ -20,11 +21,12 @@ class Session:
             >>> s.request(mitel_ommclient2.messages.Ping())
     """
 
-    def __init__(self, host, username, password, port=None, connection_class=None):
+    def __init__(self, host, username, password, port=None, ommsync=False, connection_class=None):
         self.host = host
         self.username = username
         self.password = password
         self.port = port
+        self.ommsync = ommsync
         self.connection_class = connection_class
         if self.connection_class is None:
             self.connection_class = connection.Connection
@@ -58,7 +60,7 @@ class Session:
             self._connection.connect()
 
             # Login
-            r = self.request(messages.Open(self.username, self.password))
+            r = self.request(messages.Open(self.username, self.password, UserDeviceSyncClient=self.ommsync))
 
             r.raise_on_error()
 

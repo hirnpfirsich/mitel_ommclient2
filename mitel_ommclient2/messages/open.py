@@ -4,11 +4,22 @@ from . import Request, Response
 
 
 class Open(Request):
-    def __init__(self, username, password, **kwargs):
+    """
+        Authenticate Message
+
+        Needs to be the first message on a new connection.
+
+        :param username: Username
+        :param password: Password
+        :param UserDeviceSyncClient: If True login as OMM-Sync client. Some operations in OMM-Sync mode might lead to destroy DECT paring.
+    """
+    def __init__(self, username, password, UserDeviceSyncClient=False, **kwargs):
         super().__init__("Open", **kwargs)
 
         self.attrs["username"] = username
         self.attrs["password"] = password
+        if UserDeviceSyncClient:
+            self.attrs["UserDeviceSyncClient"] = "true"
 
     @property
     def username(self):
@@ -17,6 +28,10 @@ class Open(Request):
     @property
     def password(self):
         return self.attrs.get("password")
+
+    @property
+    def UserDeviceSyncClient(self):
+        return self.attrs.get("UserDeviceSyncClient")
 
 class OpenResp(Response):
     @property
