@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
+import queue
+import select
 import socket
 import ssl
-
+import threading
 
 class Connection:
     """
@@ -22,9 +24,10 @@ class Connection:
         self._host = host
         self._port = port
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._recv_buffer = b""
 
-        self._socket.settimeout(3)
+        self._received_messages = queue.Queue()
+
+        self._close = False
 
     def connect(self):
         """
@@ -32,6 +35,9 @@ class Connection:
         """
 
         self._socket.connect((self._host, self._port))
+        self._socket.setblocking(False)
+
+        threading.Thread(target=self._receive_loop, daemon=True).start()
 
     def send(self, message):
         """
@@ -42,6 +48,34 @@ class Connection:
 
         self._socket.send(message.encode("utf-8") + b"\0")
 
+    def _receive_loop(self):
+        recv_buffer = b""
+
+        while not self._close:
+            if select.select([self._socket], [], []) != ([], [], []):
+                # wait for data availiable
+                while True:
+                    # fill buffer with one message
+                    data = self._socket.recv(1024)
+
+                    if not data:
+                        break
+
+                    recv_buffer += data
+
+                    if b"\0" in recv_buffer:
+                        break
+
+
+                if b"\0" not in recv_buffer:
+                    # no new messages
+                    break
+
+                message, buffer = recv_buffer.split(b"\0", 1)
+                recv_buffer = buffer
+
+                self._received_messages.put(message)
+
     def recv(self):
         """
             Returns one message
@@ -49,34 +83,17 @@ class Connection:
             Use multiple times to receive multiple messages
         """
 
-        data = b""
-        while True:
-            try:
-                new_data = self._socket.recv(1024)
-            except TimeoutError:
-                break
-
-            data += new_data
-
-            if b"\0" in new_data:
-                break
-
-        self._recv_buffer += data
-
-        if b"\0" not in self._recv_buffer:
-            # no new messages
+        if self._received_messages.empty():
             return None
 
-        message, buffer = self._recv_buffer.split(b"\0", 1)
-        self._recv_buffer = buffer
-
-        return message.decode("utf-8")
+        return self._received_messages.get().decode("utf-8")
 
     def close(self):
         """
-            Shout down connection
+            Shut down connection
         """
 
+        self._close = True
         return self._socket.close()
 
     def __del__(self):
