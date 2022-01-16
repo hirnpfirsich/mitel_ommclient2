@@ -44,7 +44,7 @@ class DictRequest(Request):
     def __init__(self, name, attrs={}, childs={}):
         self.name = name
         self.attrs = attrs
-        self.childs = attrs
+        self.childs = childs
 
 
 class Response:
