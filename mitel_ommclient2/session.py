@@ -76,8 +76,6 @@ class Session:
                 'PingResp'
         """
 
-        message = messages.construct(request)
-        self._connection.send(message)
+        self._connection.send(request)
 
-        res = self._wait_for_respose()
-        return messages.parse(res)
+        return self._wait_for_respose()

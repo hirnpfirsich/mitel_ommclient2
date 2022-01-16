@@ -6,6 +6,8 @@ import socket
 import ssl
 import threading
 
+from . import messages
+
 class Connection:
     """
         Establishes a connection to the OM Application XML Interface
@@ -46,6 +48,8 @@ class Connection:
             :param message: Message string
         """
 
+        message = messages.construct(message)
+
         self._socket.send(message.encode("utf-8") + b"\0")
 
     def _receive_loop(self):
@@ -74,6 +78,8 @@ class Connection:
                 message, buffer = recv_buffer.split(b"\0", 1)
                 recv_buffer = buffer
 
+                message = message.decode("utf-8")
+                message = messages.parse(message)
                 self._received_messages.put(message)
 
     def recv(self):
@@ -86,7 +92,7 @@ class Connection:
         if self._received_messages.empty():
             return None
 
-        return self._received_messages.get().decode("utf-8")
+        return self._received_messages.get()
 
     def close(self):
         """
