@@ -28,6 +28,10 @@ class Request:
     def seq(self):
         return self.attrs.get("seq")
 
+    @seq.setter
+    def seq(self, seq):
+        self.attrs["seq"] = seq
+
 
 class DictRequest(Request):
     """
@@ -79,7 +83,7 @@ class Response:
 
     @property
     def seq(self):
-        return self.attrs.get("seq")
+        return int(self.attrs.get("seq"))
 
     @property
     def errCode(self):

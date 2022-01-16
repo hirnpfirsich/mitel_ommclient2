@@ -35,17 +35,6 @@ class Session:
 
         self._ensure_connection()
 
-    def _wait_for_respose(self):
-        """
-            Wait until data got received and return message string
-        """
-
-        while True:
-            r = self._connection.recv()
-            if r is not None:
-                return r
-            sleep(0.1)
-
     def _ensure_connection(self):
         """
             Make sure we are connected and logged in
@@ -65,17 +54,4 @@ class Session:
             r.raise_on_error()
 
     def request(self, request):
-        """
-            Sends a request and waits for response
-
-            :param request: Request object
-
-            Usage::
-                >>> r = s.request(mitel_ommclient2.messages.Ping())
-                >>> r.name
-                'PingResp'
-        """
-
-        self._connection.send(request)
-
-        return self._wait_for_respose()
+        return self._connection.request(request)

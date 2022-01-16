@@ -27,7 +27,8 @@ class Connection:
         self._port = port
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        self._received_messages = queue.Queue()
+        self._seq = 0 # state of the sequence number generator
+        self._requests = {} # waiting area for pending responses
 
         self._close = False
 
@@ -41,18 +42,13 @@ class Connection:
 
         threading.Thread(target=self._receive_loop, daemon=True).start()
 
-    def send(self, message):
-        """
-            Sends message string
-
-            :param message: Message string
-        """
-
-        message = messages.construct(message)
-
-        self._socket.send(message.encode("utf-8") + b"\0")
-
     def _receive_loop(self):
+        """
+            Receives messages from socket and associates them to the responding request
+
+            This function is intended to be executed in thread.
+        """
+
         recv_buffer = b""
 
         while not self._close:
@@ -63,11 +59,13 @@ class Connection:
                     data = self._socket.recv(1024)
 
                     if not data:
+                        # buffer is empty
                         break
 
                     recv_buffer += data
 
                     if b"\0" in recv_buffer:
+                        # there is a full message in buffer, handle that first
                         break
 
 
@@ -75,24 +73,62 @@ class Connection:
                     # no new messages
                     break
 
+                # get one message from recv_buffer
                 message, buffer = recv_buffer.split(b"\0", 1)
                 recv_buffer = buffer
 
+                # parse the message
                 message = message.decode("utf-8")
-                message = messages.parse(message)
-                self._received_messages.put(message)
+                response = messages.parse(message)
 
-    def recv(self):
+                if response.seq in self._requests:
+                    # if this response belongs to a request, we return it and resolve the lock
+                    self._requests[response.seq]["response"] = response
+                    self._requests[response.seq]["event"].set()
+
+                # else the message will be ignored
+
+    def _generate_seq(self):
         """
-            Returns one message
+            Returns new sequence number
 
-            Use multiple times to receive multiple messages
+            This generates a number that tries to be unique during a session
         """
 
-        if self._received_messages.empty():
-            return None
+        seq = self._seq
+        self._seq += 1
+        return seq
 
-        return self._received_messages.get()
+    def request(self, request):
+        """
+            Sends a request, waits for response and return response
+
+            :param request: Request object
+
+            Usage::
+                >>> r = c.request(mitel_ommclient2.messages.Ping())
+                >>> r.name
+                'PingResp'
+        """
+
+        # generate new sequence number and attach to request
+        seq = self._generate_seq()
+        request.seq = seq
+
+        # add request to waiting area
+        self._requests[seq] = {
+            "event": threading.Event(),
+        }
+
+        # send request
+        message = messages.construct(request)
+        self._socket.send(message.encode("utf-8") + b"\0")
+
+        # wait for response
+        self._requests[seq]["event"].wait()
+
+        # return reponse and remove from waiting area
+        return self._requests.pop(seq, {"response": None})["response"]
 
     def close(self):
         """
