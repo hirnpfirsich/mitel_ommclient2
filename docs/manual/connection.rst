@@ -2,7 +2,8 @@ Connection Usage Manual
 =======================
 
 This manual documents the underlying connation infrastructure. If you just wanna
-use the API, please see :doc:`/manual/client` .
+use the API, please see :doc:`/manual/client` . Ideally you don't use to use this
+class directly, except for expanding the clients functionality.
 
 Using connections
 -----------------

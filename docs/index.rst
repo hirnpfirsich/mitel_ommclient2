@@ -6,6 +6,8 @@
 Welcome to Mitel OMMClient2's documentation!
 ============================================
 
+This is the documentation for mitel_ommclient2. To get started stick to the :doc:`manual/client`.
+
 .. toctree::
    :maxdepth: 2
 
