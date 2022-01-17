@@ -3,6 +3,5 @@
 from . import client
 from . import connection
 from . import messages
-from . import session
 
 from .client import OMMClient2
