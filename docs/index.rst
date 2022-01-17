@@ -8,9 +8,11 @@ Welcome to Mitel OMMClient2's documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
 
-:ref:`api`
+   manual/client
+   manual/connection
+   manual/messages
+   api/modules
 
 Indices and tables
 ==================
