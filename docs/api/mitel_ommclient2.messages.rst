@@ -4,6 +4,22 @@ mitel\_ommclient2.messages package
 Submodules
 ----------
 
+mitel\_ommclient2.messages.getaccount module
+--------------------------------------------
+
+.. automodule:: mitel_ommclient2.messages.getaccount
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+mitel\_ommclient2.messages.getppdev module
+------------------------------------------
+
+.. automodule:: mitel_ommclient2.messages.getppdev
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 mitel\_ommclient2.messages.open module
 --------------------------------------
 

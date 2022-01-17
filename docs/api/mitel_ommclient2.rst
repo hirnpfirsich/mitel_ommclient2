@@ -36,14 +36,6 @@ mitel\_ommclient2.exceptions module
    :undoc-members:
    :show-inheritance:
 
-mitel\_ommclient2.session module
---------------------------------
-
-.. automodule:: mitel_ommclient2.session
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Module contents
 ---------------
 

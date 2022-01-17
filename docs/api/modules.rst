@@ -1,7 +1,7 @@
 .. _api:
 
-mitel_ommclient2
-================
+API Documentation
+=================
 
 .. toctree::
    :maxdepth: 4
