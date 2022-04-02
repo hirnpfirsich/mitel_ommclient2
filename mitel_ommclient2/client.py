@@ -23,7 +23,7 @@ class OMMClient2:
 
         Use request to send custom messages::
 
-            >>> r = s.request(mitel_ommclient2.messages.Ping())
+            >>> r = s.connection.request(mitel_ommclient2.messages.Ping())
     """
 
     def __init__(self, host, username, password, port=None, ommsync=False):
@@ -39,27 +39,12 @@ class OMMClient2:
             kwargs["port"] = self._port
 
         # Connect
-        self._connection = Connection(self._host, **kwargs)
-        self._connection.connect()
+        self.connection = Connection(self._host, **kwargs)
+        self.connection.connect()
 
         # Login
-        r = self.request(messages.Open(self._username, self._password, UserDeviceSyncClient=self._ommsync))
+        r = self.connection.request(messages.Open(self._username, self._password, UserDeviceSyncClient=self._ommsync))
         r.raise_on_error()
-
-    def request(self, request):
-        """
-            Sends a request, waits for response and returns response
-
-            :param request: Request object
-
-            Usage::
-
-                >>> r = c.request(mitel_ommclient2.messages.Ping())
-                >>> r.name
-                'PingResp'
-        """
-
-        return self._connection.request(request)
 
     def get_account(self, id):
         """
@@ -68,7 +53,7 @@ class OMMClient2:
             :param id: User id
         """
 
-        r = self.request(messages.GetAccount(id))
+        r = self.connection.request(messages.GetAccount(id))
         r.raise_on_error()
         if r.account is None:
             return None
@@ -80,7 +65,7 @@ class OMMClient2:
 
             :param id: Device id
         """
-        r = self.request(messages.GetPPDev(ppn))
+        r = self.connection.request(messages.GetPPDev(ppn))
         r.raise_on_error()
         if r.pp is None:
             return None
@@ -93,7 +78,7 @@ class OMMClient2:
             Returns `True` when response is received.
         """
 
-        r = self.request(messages.Ping())
+        r = self.connection.request(messages.Ping())
         if r.errCode is None:
             return True
         return False

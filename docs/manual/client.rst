@@ -37,6 +37,7 @@ validate common API requests. See class documentation to get and overview and op
 Making custom requests
 ----------------------
 
-:func:`mitel_ommclient2.client.OMMClient2.request` allowes you to send custom requests.
-It just passes arguments and results to :func:`mitel_ommclient2.connection.Connection.request`.
+:class:`mitel_ommclient2.client.OMMClient2` holds its :class:`mitel_ommclient2.connection.Connection`
+in the connection attribute.
+Use :func:`mitel_ommclient2.connection.Connection.request` directly for making some custom requests.
 See :doc:`/manual/connection` about using this.
