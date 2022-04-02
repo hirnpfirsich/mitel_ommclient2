@@ -16,10 +16,7 @@ c = mitel_ommclient2.OMMClient2("omm.local", "admin", "admin")
 c.ping()
 
 # Create custom messages
-r = c.request(mitel_ommclient2.messages.Ping(timeStamp=2342))
-
-# Craft your own request, if it is not implemented yet
-r = c.request(mitel_ommclient2.messages.DictRequest("Ping", {"timeStamp": 2342}))
+r = c.connection.request(mitel_ommclient2.messages.Ping(timeStamp=2342))
 ```
 
 Consult class documentation for more in depth examples and options.

@@ -32,25 +32,6 @@ class Request:
     def seq(self, seq):
         self.attrs["seq"] = seq
 
-
-class DictRequest(Request):
-    """
-        Create a message by dict attributes
-
-        :param name: Name of the message
-        :param attrs: Message attributes
-        :param childs: Message children
-
-        Usage::
-            >>> req = DictRequest("Ping", {"timeStamp": 2342})
-    """
-
-    def __init__(self, name, attrs={}, childs={}):
-        self.name = name
-        self.attrs = attrs
-        self.childs = childs
-
-
 class Response:
     """
         Response message class
