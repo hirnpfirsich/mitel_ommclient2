@@ -14,7 +14,7 @@ This is the documentation for mitel_ommclient2. To get started stick to the :doc
    manual/client
    manual/connection
    manual/messages
-   api/modules
+   api/index
 
 Indices and tables
 ==================

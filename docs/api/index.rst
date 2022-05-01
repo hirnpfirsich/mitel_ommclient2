@@ -6,4 +6,7 @@ API Documentation
 .. toctree::
    :maxdepth: 4
 
-   mitel_ommclient2
+   client
+   connection
+   exceptions
+   messages
