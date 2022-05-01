@@ -11,12 +11,15 @@ class ChildType:
 
     FIELDS = {}
 
-
     def __init__(self, attrs={}):
         self._attrs = {}
 
-        for k, v in attrs.items():
-            setattr(self, k, v)
+        if self.FIELDS is not None:
+            for k, v in attrs.items():
+                setattr(self, k, v)
+        else:
+            # don't check attrs for types we do have any information
+            self._attrs = attrs
 
     def __getattr__(self, name):
         if name in self.FIELDS.keys():
@@ -45,11 +48,54 @@ def cast_dict_to_childtype(t, d):
 
     return t(d)
 
+
+class EnumType:
+
+    VALUES = [] # Allowed values
+
+    def __init__(self, s):
+        if self.VALUES is not None:
+            if s in self.VALUES:
+                self.value = s
+            else:
+                raise ValueError()
+        else:
+            self.value = s
+
+    def __str__(self):
+        return str(self.value)
+
+    def __repr__(self):
+        return "{}({})".format(self.__class__.__name__, repr(self.value))
+
+
+class CallForwardStateType(EnumType):
+    VALUES = [
+        "Off",
+        "Busy",
+        "NoAnswer",
+        "BusyNoAnswer",
+        "All",
+    ]
+
+
+class LanguageType(EnumType):
+    VALUES = None
+
+
+class MonitoringStateType(EnumType):
+    VALUES = None
+
+
+class PPRelTypeType(EnumType):
+    VALUES = None
+
+
 class PPUserType(ChildType):
     FIELDS = {
         "uid": int,
         "timeStamp": int,
-        "relType": None, #PPRelTypeType,
+        "relType": PPRelTypeType,
         "ppn": int,
         "name": str,
         "num": str,
@@ -62,10 +108,10 @@ class PPUserType(ChildType):
         "sosNum": str,
         "voiceboxNum": str,
         "manDownNum": str,
-        "forwardStateCall": None, #ForwardStateType,
+        "forwardState": CallForwardStateType,
         "forwardTime": int,
         "forwardDest": str,
-        "langPP": None, #LanguageType,
+        "langPP": LanguageType,
         "holdRingBackTime": int,
         "autoAnswer": str,
         "microphoneMute": str,
@@ -88,17 +134,17 @@ class PPUserType(ChildType):
         "conferenceServerType": str,
         "conferenceServerURI": str,
         "monitoringMode": str,
-        "CUS": None, #MonitoringStateType,
-        "HAS": None, #MonitoringStateType,
-        "HSS": None, #MonitoringStateType,
-        "HRS": None, #MonitoringStateType,
-        "HCS": None, #MonitoringStateType,
-        "SRS": None, #MonitoringStateType,
-        "SCS": None, #MonitoringStateType,
-        "CDS": None, #MonitoringStateType,
-        "HBS": None, #MonitoringStateType,
-        "BTS": None, #MonitoringStateType,
-        "SWS": None, #MonitoringStateType,
+        "CUS": MonitoringStateType,
+        "HAS": MonitoringStateType,
+        "HSS": MonitoringStateType,
+        "HRS": MonitoringStateType,
+        "HCS": MonitoringStateType,
+        "SRS": MonitoringStateType,
+        "SCS": MonitoringStateType,
+        "CDS": MonitoringStateType,
+        "HBS": MonitoringStateType,
+        "BTS": MonitoringStateType,
+        "SWS": MonitoringStateType,
         "credentialPw": str,
         "configurationDataLoaded": bool,
         "ppData": str,
@@ -109,7 +155,6 @@ class PPUserType(ChildType):
         "uidSec": int,
         "permanent": bool,
         "lang": None,
-        "forwardState": None,
         "autoLogoutOnCharge": bool,
         "hotDeskingSupport": bool,
         "authenticateLogout": bool,
