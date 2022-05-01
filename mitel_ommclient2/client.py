@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from .connection import Connection
+from . import exceptions
 from . import messages
 
 class OMMClient2:
@@ -70,6 +71,27 @@ class OMMClient2:
         if r.pp is None:
             return None
         return r.pp[0]
+
+    def get_devices(self):
+        """
+            Get all PP devices
+        """
+        next_ppn = 0
+        while True:
+            r = self.connection.request(messages.GetPPDev(next_ppn, maxRecords=20))
+            try:
+                r.raise_on_error()
+            except exceptions.ENoEnt:
+                # No more devices to fetch
+                break
+
+            # Output all found devices
+            for pp in r.pp:
+                yield pp
+
+            # Determine next possible ppn
+            next_ppn = int(pp["ppn"]) + 1
+
 
     def ping(self):
         """
