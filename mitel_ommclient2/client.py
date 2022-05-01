@@ -92,6 +92,37 @@ class OMMClient2:
             # Determine next possible ppn
             next_ppn = int(pp["ppn"]) + 1
 
+    def get_user(self, uid):
+        """
+            Get PP user
+
+            :param uid: User id
+        """
+        r = self.connection.request(messages.GetPPUser(uid))
+        r.raise_on_error()
+        if r.user is None:
+            return None
+        return r.user[0]
+
+    def get_users(self):
+        """
+            Get all PP users
+        """
+        next_uid = 0
+        while True:
+            r = self.connection.request(messages.GetPPUser(next_uid, maxRecords=20))
+            try:
+                r.raise_on_error()
+            except exceptions.ENoEnt:
+                # No more devices to fetch
+                break
+
+            # Output all found devices
+            for user in r.user:
+                yield user
+
+            # Determine next possible ppn
+            next_uid = int(user["uid"]) + 1
 
     def ping(self):
         """

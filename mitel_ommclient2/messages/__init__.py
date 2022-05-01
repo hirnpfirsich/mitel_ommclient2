@@ -84,6 +84,7 @@ class Response:
 
 from .getaccount import GetAccount, GetAccountResp
 from .getppdev import GetPPDev, GetPPDevResp
+from .getppuser import GetPPUser, GetPPUserResp
 from .open import Open, OpenResp
 from .ping import Ping, PingResp
 
@@ -111,6 +112,7 @@ def _response_type_by_name(name):
     response_types = [
         GetAccountResp,
         GetPPDevResp,
+        GetPPUserResp,
         PingResp,
     ]
 
