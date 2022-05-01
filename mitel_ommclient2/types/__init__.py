@@ -79,6 +79,10 @@ class CallForwardStateType(EnumType):
     ]
 
 
+class DECTSubscriptionStateType(EnumType):
+    VALUES = None
+
+
 class LanguageType(EnumType):
     VALUES = None
 
@@ -89,6 +93,45 @@ class MonitoringStateType(EnumType):
 
 class PPRelTypeType(EnumType):
     VALUES = None
+
+
+class AccountType(ChildType):
+    FIELDS = {
+        "id": int,
+        "username": str,
+        "password": str,
+        "oldPassword": str,
+        "permission": None,
+        "active": bool,
+        "aging": None,
+        "expire": int,
+        "state": str,
+    }
+
+
+class PPDevType(ChildType):
+    FIELDS = {
+        "ppn": int,
+        "timeStamp": int,
+        "relType": PPRelTypeType,
+        "uid": int,
+        "ipei": str,
+        "ac": str,
+        "s": DECTSubscriptionStateType,
+        "uak": str,
+        "encrypt": bool,
+        "capMessaging": bool,
+        "capMessagingForInternalUse": bool,
+        "capEnhLocating": bool,
+        "capBluetooth": bool,
+        "ethAddr": str,
+        "hwType": str,
+        "ppProfileCapability": bool,
+        "ppDefaultProfileLoaded": bool,
+        "subscribeToPARIOnly": bool,
+        # undocumented
+        "ppnSec": int,
+    }
 
 
 class PPUserType(ChildType):

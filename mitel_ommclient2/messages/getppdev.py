@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from . import Request, Response, request_type, response_type
+from ..types import PPDevType
 
 
 @request_type
@@ -14,5 +15,5 @@ class GetPPDev(Request):
 @response_type
 class GetPPDevResp(Response):
     CHILDS = {
-        "pp": None,
+        "pp": PPDevType,
     }

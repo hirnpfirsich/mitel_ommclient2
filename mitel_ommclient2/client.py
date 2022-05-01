@@ -102,7 +102,7 @@ class OMMClient2:
                 yield pp
 
             # Determine next possible ppn
-            next_ppn = int(pp["ppn"]) + 1
+            next_ppn = int(pp.ppn) + 1
 
     def get_user(self, uid):
         """
