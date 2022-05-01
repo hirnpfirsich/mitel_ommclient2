@@ -3,6 +3,7 @@
 from xml.dom.minidom import getDOMImplementation, parseString
 
 from ..exceptions import exception_classes, OMResponseException
+from ..types import cast_dict_to_childtype
 
 
 class Message:
@@ -73,6 +74,9 @@ class Message:
             self._attrs[name] = value
         else:
             object.__setattr__(self, name, value)
+
+    def __repr__(self):
+        return "{}({}, {}, {})".format(self.__class__.__name__, self.name, repr(self._attrs), repr(self._childs))
 
 
 class Request(Message):
@@ -179,6 +183,11 @@ def parse(message):
             new_child[item.name] = item.value
 
         childname = child.tagName
+
+        # cast dict into child type
+        if response_type.CHILDS.get(childname) is not None:
+            new_child = cast_dict_to_childtype(response_type.CHILDS[childname], new_child)
+
         if childname in childs:
             childs[childname].append(new_child)
         else:

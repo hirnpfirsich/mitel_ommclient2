@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from . import Request, Response, request_type, response_type
+from ..types import PPUserType
 
 
 @request_type
@@ -14,5 +15,5 @@ class GetPPUser(Request):
 @response_type
 class GetPPUserResp(Response):
     CHILDS = {
-        "user": None,
+        "user": PPUserType,
     }

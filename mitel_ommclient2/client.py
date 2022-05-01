@@ -139,7 +139,7 @@ class OMMClient2:
                 yield user
 
             # Determine next possible ppn
-            next_uid = int(user["uid"]) + 1
+            next_uid = int(user.uid) + 1
 
     def ping(self):
         """
