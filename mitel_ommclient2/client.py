@@ -59,7 +59,7 @@ class OMMClient2:
             return None
         return r.account[0]
 
-    def get_pp_dev(self, ppn):
+    def get_device(self, ppn):
         """
             Get PP device
 
