@@ -1,27 +1,18 @@
 #!/usr/bin/env python3
 
-from . import Request, Response
+from . import Request, Response, request_type, response_type
 
 
+@request_type
 class GetAccount(Request):
-    def __init__(self, id, maxRecords=None, **kwargs):
-        super().__init__("GetAccount", **kwargs)
-
-        self.attrs["id"] = id
-
-        if maxRecords is not None:
-            self.attrs["maxRecords"] = maxRecords
-
-    @property
-    def id(self):
-        return self.attrs.get("id")
-
-    @property
-    def maxRecords(self):
-        return self.attrs.get("maxRecords")
+    FIELDS = {
+        "id": int,
+        "maxRecords": int,
+    }
 
 
+@response_type
 class GetAccountResp(Response):
-    @property
-    def account(self):
-        return self.childs.get("account")
+    CHILDS = {
+        "account": None,
+    }

@@ -1,27 +1,18 @@
 #!/usr/bin/env python3
 
-from . import Request, Response
+from . import Request, Response, request_type, response_type
 
 
+@request_type
 class GetPPDev(Request):
-    def __init__(self, ppn, maxRecords=None, **kwargs):
-        super().__init__("GetPPDev", **kwargs)
-
-        self.attrs["ppn"] = ppn
-
-        if maxRecords is not None:
-            self.attrs["maxRecords"] = maxRecords
-
-    @property
-    def ppn(self):
-        return self.attrs.get("ppn")
-
-    @property
-    def maxRecords(self):
-        return self.attrs.get("maxRecords")
+    FIELDS = {
+        "ppn": int,
+        "maxRecords": int,
+    }
 
 
+@response_type
 class GetPPDevResp(Response):
-    @property
-    def pp(self):
-        return self.childs.get("pp")
+    CHILDS = {
+        "pp": None,
+    }

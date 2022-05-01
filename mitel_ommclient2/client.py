@@ -44,7 +44,11 @@ class OMMClient2:
         self.connection.connect()
 
         # Login
-        r = self.connection.request(messages.Open(self._username, self._password, UserDeviceSyncClient=self._ommsync))
+        m = messages.Open()
+        m.username = self._username
+        m.password = self._password
+        m.UserDeviceSyncClient = self._ommsync
+        r = self.connection.request(m)
         r.raise_on_error()
 
     def get_account(self, id):
@@ -54,11 +58,13 @@ class OMMClient2:
             :param id: User id
         """
 
-        r = self.connection.request(messages.GetAccount(id))
+        m = messages.GetAccount()
+        m.id = id
+        r = self.connection.request(m)
         r.raise_on_error()
-        if r.account is None:
+        if r.childs.account is None:
             return None
-        return r.account[0]
+        return r.childs.account[0]
 
     def get_device(self, ppn):
         """
@@ -66,11 +72,14 @@ class OMMClient2:
 
             :param ppn: Device id
         """
-        r = self.connection.request(messages.GetPPDev(ppn))
+
+        m = messages.GetPPDev()
+        m.ppn = ppn
+        r = self.connection.request(m)
         r.raise_on_error()
-        if r.pp is None:
+        if r.childs.pp is None:
             return None
-        return r.pp[0]
+        return r.childs.pp[0]
 
     def get_devices(self):
         """
@@ -78,7 +87,10 @@ class OMMClient2:
         """
         next_ppn = 0
         while True:
-            r = self.connection.request(messages.GetPPDev(next_ppn, maxRecords=20))
+            m = messages.GetPPDev()
+            m.ppn = next_ppn
+            m.maxRecords = 20
+            r = self.connection.request(m)
             try:
                 r.raise_on_error()
             except exceptions.ENoEnt:
@@ -86,7 +98,7 @@ class OMMClient2:
                 break
 
             # Output all found devices
-            for pp in r.pp:
+            for pp in r.childs.pp:
                 yield pp
 
             # Determine next possible ppn
@@ -98,11 +110,13 @@ class OMMClient2:
 
             :param uid: User id
         """
-        r = self.connection.request(messages.GetPPUser(uid))
+        m = messages.GetPPUser()
+        m.uid = uid
+        r = self.connection.request(m)
         r.raise_on_error()
-        if r.user is None:
+        if r.childs.user is None:
             return None
-        return r.user[0]
+        return r.childs.user[0]
 
     def get_users(self):
         """
@@ -110,7 +124,10 @@ class OMMClient2:
         """
         next_uid = 0
         while True:
-            r = self.connection.request(messages.GetPPUser(next_uid, maxRecords=20))
+            m = messages.GetPPUser()
+            m.uid = next_uid
+            m.maxRecords = 20
+            r = self.connection.request(m)
             try:
                 r.raise_on_error()
             except exceptions.ENoEnt:
@@ -118,7 +135,7 @@ class OMMClient2:
                 break
 
             # Output all found devices
-            for user in r.user:
+            for user in r.childs.user:
                 yield user
 
             # Determine next possible ppn

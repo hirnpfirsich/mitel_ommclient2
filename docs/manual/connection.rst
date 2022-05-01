@@ -15,7 +15,7 @@ to establish a transport to the API.
 
     import mitel_ommclient2
 
-    conn = mitel_ommclient2..connection.Connection("omm.local")
+    conn = mitel_ommclient2.connection.Connection("omm.local")
 
 To actually connect to the OMM, you need to call :func:`mitel_ommclient2.connection.Connection.connect`.
 
@@ -45,8 +45,8 @@ You hand over a Request object and receive a response object.
 
 .. code-block:: python
 
-    >>> request = mitel_ommclient2.messages.Ping()
-    >>> r = conn.request(request)
+    >>> m = mitel_ommclient2.messages.Ping()
+    >>> r = conn.request(m)
     >>> r.name
     'PingResp'
 

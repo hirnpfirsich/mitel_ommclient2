@@ -5,14 +5,13 @@ The API consists of three main message types: request, response and event. They
 are represented by :class:`mitel_ommclient2.messages.Request`, :class:`mitel_ommclient2.messages.Response`
 and events aren't supported yet.
 
-There are several subclasses for each messages type, but they are just just overlays
-to provide a conveinient interface to message content using attributes.
+There are several subclasses for each messages type, which provide a conveinient
+interface to message content using attributes.
 
-Each message provides three attributes that define the central interfaces:
-
-  * name
-  * attrs
-  * childs
+For each message you can access each field directly as class attributes.
+There are two special attributes:
+  * name: returns the message name
+  * childs: allowes you to access childs by the child name as class attributes
 
 Using messages
 --------------
@@ -27,27 +26,20 @@ and hand it over to :func:`mitel_ommclient2.client.OMMClient2.request` or
 
     my_time = int(time.time())
 
-    request = mitel_ommclient2.messages.Ping(timeStamp=my_time)
-    r = c.request(request)
+    m = mitel_ommclient2.messages.Ping()
+    m.timeStamp = my_time
+    r = c.request(m)
 
     ping = r.timeStamp - my_time
 
-Crafting your own messages
---------------------------
+A more complex example
+----------------------
 
-It some cases your message class isn't implemented yet. Then you can craft the
-message yourself.
+This demonstrates how to access message childs.
 
 .. code-block:: python
 
-    import time
-
-    my_time = int(time.time())
-
-    request = mitel_ommclient2.messages.Request("Ping")
-    request.attrs = {
-      "timeStamp": my_time,
-    }
-    r = c.request(request)
-
-    ping = r.attrs["timeStamp"] - my_time
+    m = messages.GetAccount()
+    m.id = id
+    r = self.connection.request(m)
+    return r.childs.account[0]

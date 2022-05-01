@@ -20,6 +20,14 @@ mitel\_ommclient2.messages.getppdev module
    :undoc-members:
    :show-inheritance:
 
+mitel\_ommclient2.messages.getppuser module
+-------------------------------------------
+
+.. automodule:: mitel_ommclient2.messages.getppuser
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
 mitel\_ommclient2.messages.open module
 --------------------------------------
 

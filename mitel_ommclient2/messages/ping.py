@@ -1,20 +1,17 @@
 #!/usr/bin/env python3
 
-from . import Request, Response
+from . import Request, Response, request_type, response_type
 
 
+@request_type
 class Ping(Request):
-    def __init__(self, timeStamp=None, **kwargs):
-        super().__init__("Ping", **kwargs)
+    FIELDS = {
+        "timeStamp": int,
+    }
 
-        if timeStamp is not None:
-            self.attrs["timeStamp"] = timeStamp
 
-    @property
-    def timeStamp(self):
-        return self.attrs.get("timeStamp")
-
+@response_type
 class PingResp(Response):
-    @property
-    def timeStamp(self):
-        return self.attrs.get("timeStamp")
+    FIELDS = {
+        "timeStamp": int,
+    }

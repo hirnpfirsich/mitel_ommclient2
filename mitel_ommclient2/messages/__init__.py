@@ -5,45 +5,98 @@ from xml.dom.minidom import getDOMImplementation, parseString
 from ..exceptions import exception_classes, OMResponseException
 
 
-class Request:
+class Message:
     """
-        Request message class
-
-        :param name: Name of the message
-        :param seq: Unique sequence number to associate responses
-
-        Usage::
-            >>> req = Request("Ping")
-    """
-
-    def __init__(self, name, seq=None):
-        self.name = name
-        self.attrs = {}
-        self.childs = {}
-
-        if seq is not None:
-            self.attrs["seq"] = seq
-
-    @property
-    def seq(self):
-        return self.attrs.get("seq")
-
-    @seq.setter
-    def seq(self, seq):
-        self.attrs["seq"] = seq
-
-class Response:
-    """
-        Response message class
+        Base message class
 
         :param name: Name of the message
         :param attrs: Message attributes
         :param childs: Message children
     """
-    def __init__(self, name, attrs={}, childs={}):
+
+    # Fields defined by the base type class
+    BASE_FIELDS = {}
+    # Fields defined by subclasses
+    FIELDS = {}
+    # Child types
+    CHILDS = {}
+    # Fields dicts consist of the field name as name and the field type as value
+    # Use None if the field type is unknown, any type is allowed then
+
+
+    class Childs:
+        """
+            Contains message childs
+        """
+
+        CHILDS = {}
+
+        def __init__(self, child_types, child_dict):
+            self.CHILDS = child_types
+            self._child_dict = child_dict
+
+        def __getattr__(self, name):
+            if name in self.CHILDS.keys():
+                return self._child_dict.get(name)
+            else:
+                raise AttributeError()
+
+        def __setattr__(self, name, value):
+            if name in self.CHILDS.keys():
+                if self.CHILDS[name] is not None and type(value) != self.CHILDS[name]:
+                    raise TypeError()
+                self._child_dict[name] = value
+            else:
+                object.__setattr__(self, name, value)
+
+
+    def __init__(self, name=None, attrs={}, childs={}):
         self.name = name
-        self.attrs = attrs
-        self.childs = childs
+        if not self.name:
+            self.name = self.__class__.__name__
+        self._attrs = attrs
+        self._childs = childs
+        self.childs = self.Childs(self.CHILDS, self._childs)
+
+    def __getattr__(self, name):
+        fields = self.FIELDS | self.BASE_FIELDS
+        if name in fields.keys():
+            return self._attrs.get(name)
+        else:
+            raise AttributeError()
+
+    def __setattr__(self, name, value):
+        fields = self.FIELDS | self.BASE_FIELDS
+        if name in fields.keys():
+            if fields[name] is not None and type(value) != fields[name]:
+                raise TypeError()
+            self._attrs[name] = value
+        else:
+            object.__setattr__(self, name, value)
+
+
+class Request(Message):
+    """
+        Request message type class
+    """
+
+    BASE_FIELDS = {
+        "seq": int,
+    }
+
+
+class Response(Message):
+    """
+        Response message type class
+    """
+
+    BASE_FIELDS = {
+        "seq": int,
+        "errCode": None,
+        "info": None,
+        "bad": None,
+        "maxLen": None,
+    }
 
     def raise_on_error(self):
         """
@@ -62,25 +115,17 @@ class Response:
         if self.errCode is not None:
             raise exception_classes.get(self.errCode, OMResponseException)(response=self)
 
-    @property
-    def seq(self):
-        return int(self.attrs.get("seq"))
 
-    @property
-    def errCode(self):
-        return self.attrs.get("errCode")
+REQUEST_TYPES = {}
+RESPONSE_TYPES = {}
 
-    @property
-    def info(self):
-        return self.attrs.get("info")
+def request_type(c):
+    REQUEST_TYPES[c.__name__] = c
+    return c
 
-    @property
-    def bad(self):
-        return self.attrs.get("bad")
-
-    @property
-    def maxLen(self):
-        return self.attrs.get("maxLen")
+def response_type(c):
+    RESPONSE_TYPES[c.__name__] = c
+    return c
 
 from .getaccount import GetAccount, GetAccountResp
 from .getppdev import GetPPDev, GetPPDevResp
@@ -96,29 +141,17 @@ def construct(request):
     message = impl.createDocument(None, request.name, None)
     root = message.documentElement
 
-    for k, v in request.attrs.items():
+    for k, v in request._attrs.items():
         root.setAttribute(str(k), str(v))
 
 
-    for k, v in request.childs.items():
+    for k, v in request._childs.items():
         child = message.createElement(k)
         if v is not None:
             for c_k, c_v in v.items():
                 child.setAttribute(str(c_k), str(c_v))
         root.appendChild(child)
     return root.toxml()
-
-def _response_type_by_name(name):
-    response_types = [
-        GetAccountResp,
-        GetPPDevResp,
-        GetPPUserResp,
-        PingResp,
-    ]
-
-    response_types_dict = {r.__name__: r for r in response_types}
-
-    return response_types_dict.get(name, Response)
 
 def parse(message):
     message = parseString(message)
@@ -128,9 +161,15 @@ def parse(message):
     attrs = {}
     childs = {}
 
+    response_type = RESPONSE_TYPES.get(name)
+    fields = response_type.FIELDS | response_type.BASE_FIELDS
+
     for i in range(0, root.attributes.length):
         item = root.attributes.item(i)
-        attrs[item.name] = item.value
+        if fields.get(item.name) is not None:
+            attrs[item.name] = fields[item.name](item.value)
+        else:
+            attrs[item.name] = item.value
 
     child = root.firstChild
     while child is not None:
@@ -148,4 +187,4 @@ def parse(message):
         child = child.nextSibling
 
 
-    return _response_type_by_name(name)(name, attrs, childs)
+    return response_type(name, attrs, childs)
