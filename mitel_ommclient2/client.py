@@ -63,7 +63,7 @@ class OMMClient2:
         """
             Get PP device
 
-            :param id: Device id
+            :param ppn: Device id
         """
         r = self.connection.request(messages.GetPPDev(ppn))
         r.raise_on_error()
