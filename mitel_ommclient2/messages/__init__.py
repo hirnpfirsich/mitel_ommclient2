@@ -55,8 +55,8 @@ class Message:
         self.name = name
         if not self.name:
             self.name = self.__class__.__name__
-        self._attrs = attrs
-        self._childs = childs
+        self._attrs = {} | attrs
+        self._childs = {} | childs
         self.childs = self.Childs(self.CHILDS, self._childs)
 
     def __getattr__(self, name):
