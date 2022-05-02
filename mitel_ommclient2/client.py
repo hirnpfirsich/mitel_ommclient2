@@ -156,16 +156,34 @@ class OMMClient2:
 
     def set_user_name(self, uid, name):
         """
-            Get PP user
+            Set PP user name
 
             :param uid: User id
+            :param name: User name
         """
         t = types.PPUserType()
         t.uid = uid
         t.name = name
         m = messages.SetPPUser()
         m.childs.user = [t]
-        print(m)
+        r = self.connection.request(m)
+        r.raise_on_error()
+        if r.childs.user is None:
+            return None
+        return r.childs.user[0]
+
+    def set_user_num(self, uid, num):
+        """
+            Set PP user number
+
+            :param uid: User id
+            :param num: User number
+        """
+        t = types.PPUserType()
+        t.uid = uid
+        t.num = num
+        m = messages.SetPPUser()
+        m.childs.user = [t]
         r = self.connection.request(m)
 
         r.raise_on_error()
