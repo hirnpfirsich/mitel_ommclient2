@@ -76,7 +76,7 @@ class Message:
             object.__setattr__(self, name, value)
 
     def __repr__(self):
-        return "{}({}, {}, {})".format(self.__class__.__name__, self.name, repr(self._attrs), repr(self._childs))
+        return "{}({}, {}, {})".format(self.__class__.__name__, repr(self.name), repr(self._attrs), repr(self._childs))
 
 
 class Request(Message):
