@@ -44,8 +44,11 @@ class Message:
 
         def __setattr__(self, name, value):
             if name in self.CHILDS.keys():
-                if self.CHILDS[name] is not None and type(value) != self.CHILDS[name]:
+                if not isinstance(value, list):
                     raise TypeError()
+                for v in value:
+                    if self.CHILDS[name] is not None and type(v) != self.CHILDS[name]:
+                        raise TypeError()
                 self._child_dict[name] = value
             else:
                 object.__setattr__(self, name, value)
@@ -136,6 +139,7 @@ from .getppdev import GetPPDev, GetPPDevResp
 from .getppuser import GetPPUser, GetPPUserResp
 from .open import Open, OpenResp
 from .ping import Ping, PingResp
+from .setppuser import SetPPUser, SetPPUserResp
 
 def construct(request):
     """
@@ -149,12 +153,13 @@ def construct(request):
         root.setAttribute(str(k), str(v))
 
 
-    for k, v in request._childs.items():
-        child = message.createElement(k)
-        if v is not None:
-            for c_k, c_v in v.items():
-                child.setAttribute(str(c_k), str(c_v))
-        root.appendChild(child)
+    for child_name, child_list in request._childs.items():
+        if child_list is not None:
+            for child_list_item in child_list:
+                child = message.createElement(child_name)
+                for child_item_key, child_item_value in child_list_item._attrs.items():
+                    child.setAttribute(str(child_item_key), str(child_item_value))
+                root.appendChild(child)
     return root.toxml()
 
 def parse(message):

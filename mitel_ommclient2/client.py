@@ -3,6 +3,7 @@
 from .connection import Connection
 from . import exceptions
 from . import messages
+from . import types
 
 class OMMClient2:
     """
@@ -152,3 +153,22 @@ class OMMClient2:
         if r.errCode is None:
             return True
         return False
+
+    def set_user_name(self, uid, name):
+        """
+            Get PP user
+
+            :param uid: User id
+        """
+        t = types.PPUserType()
+        t.uid = uid
+        t.name = name
+        m = messages.SetPPUser()
+        m.childs.user = [t]
+        print(m)
+        r = self.connection.request(m)
+
+        r.raise_on_error()
+        if r.childs.user is None:
+            return None
+        return r.childs.user[0]
