@@ -1,0 +1,156 @@
+#!/usr/bin/env python3
+
+from mitel_ommclient2 import OMMClient2
+from mitel_ommclient2.exceptions import ENoEnt
+from mitel_ommclient2.messages import GetAccount, Ping
+import time
+
+import argparse
+import base64
+import getpass
+import traceback
+
+try:
+    # This is is only dependency not from the modules inlcuded in python by default, so we make it optional
+    import rsa
+except ImportError:
+    rsa = None
+
+# exit handling with argparse is a bit broken even with exit_on_error=False, so we hack this
+def error_instead_exit(self, message):
+    raise argparse.ArgumentError(None, message)
+argparse.ArgumentParser.error = error_instead_exit
+
+def format_child_type(t):
+    return "\n".join(["{:<30}    {}".format(key, value) for key, value in t._attrs.items()])
+
+def format_list(v):
+    return "\n\n\n\n".join(format_child_type(d) for d in v)
+
+    return fl
+
+if __name__ == "__main__":
+
+    connect_parser = argparse.ArgumentParser(prog='ommclient2')
+    connect_parser.add_argument("-n", dest="hostname", default="127.0.0.1")
+    connect_parser.add_argument("-u", dest="username", default="omm")
+    connect_parser.add_argument("-p", dest="password")
+    connect_parser.add_argument("subcommand", nargs="*")
+    args = connect_parser.parse_args()
+
+    hostname = args.hostname
+    username = args.username
+    password = args.password
+    subcommand = args.subcommand
+
+    if not password:
+        password = getpass.getpass(prompt="OMM password for {}@{}:".format(username, hostname))
+
+    c = OMMClient2(hostname, username, password)
+
+    def encrypt(secret):
+        if rsa is None:
+            raise Exception("rsa module is required for excryption")
+        publickey = c.get_publickey()
+        pubkey = rsa.PublicKey(*publickey)
+        byte_secret = secret.encode('utf8')
+        byte_encrypt = rsa.encrypt(byte_secret, pubkey)
+        encrypt = base64.b64encode(byte_encrypt).decode("utf8")
+        return encrypt
+
+    parser = argparse.ArgumentParser(prog="ommclient2", add_help=False, exit_on_error=False)
+    subparsers = parser.add_subparsers()
+
+    parser_get_account = subparsers.add_parser("encrypt")
+    parser_get_account.add_argument("secret")
+    parser_get_account.set_defaults(func=encrypt)
+
+    parser_exit = subparsers.add_parser("exit")
+    parser_exit.set_defaults(func=exit)
+
+    parser_get_account = subparsers.add_parser("get_account")
+    parser_get_account.add_argument("id", type=int)
+    parser_get_account.set_defaults(func=c.get_account, format=format_child_type)
+
+    parser_get_account = subparsers.add_parser("get_device")
+    parser_get_account.add_argument("ppn", type=int)
+    parser_get_account.set_defaults(func=c.get_device, format=format_child_type)
+
+    parser_get_account = subparsers.add_parser("get_devices")
+    parser_get_account.set_defaults(func=c.get_devices, format=format_list)
+
+    parser_get_account = subparsers.add_parser("get_publickey")
+    parser_get_account.set_defaults(func=c.get_publickey)
+
+    parser_get_account = subparsers.add_parser("get_user")
+    parser_get_account.add_argument("uid", type=int)
+    parser_get_account.set_defaults(func=c.get_user, format=format_child_type)
+
+    parser_get_account = subparsers.add_parser("get_users")
+    parser_get_account.set_defaults(func=c.get_users, format=format_list)
+
+    parser_help = subparsers.add_parser("help")
+    parser_help.set_defaults(func=parser.format_help)
+
+    parser_ping = subparsers.add_parser("ping")
+    parser_ping.set_defaults(func=lambda *args, **kwargs: "pong" if c.ping(*args, **kwargs) else "error")
+
+    parser_get_account = subparsers.add_parser("set_user_name")
+    parser_get_account.add_argument("uid", type=int)
+    parser_get_account.add_argument("name")
+    parser_get_account.set_defaults(func=c.set_user_name)
+
+    parser_get_account = subparsers.add_parser("set_user_num")
+    parser_get_account.add_argument("uid", type=int)
+    parser_get_account.add_argument("num")
+    parser_get_account.set_defaults(func=c.set_user_num)
+
+    parser_get_account = subparsers.add_parser("set_user_sipauth")
+    parser_get_account.add_argument("uid", type=int)
+    parser_get_account.add_argument("sipAuthId")
+    parser_get_account.add_argument("sipPw")
+    parser_get_account.set_defaults(func=c.set_user_sipauth)
+
+    if subcommand:
+        try:
+            args = parser.parse_args(subcommand)
+        except argparse.ArgumentError as e:
+            print("argument error:", e.message)
+            exit(1)
+        v = dict(vars(args))
+        v.pop("func")
+        format = lambda r: r
+        if v.get("format") is not None:
+            format = v.get("format")
+            v.pop("format")
+        try:
+            r = args.func(**v)
+        except Exception as e:
+            print("".join(traceback.format_exception(type(e), e, e.__traceback__)))
+            exit(1)
+        print(format(r))
+        exit()
+
+    print("OMMClient")
+    parser.print_help()
+
+    while True:
+        i = input("> ").split()
+        try:
+            args = parser.parse_args(i)
+        except argparse.ArgumentError as e:
+            print("argument error:", e.message)
+            continue
+
+        v = dict(vars(args))
+        v.pop("func")
+        format = lambda r: r
+        if v.get("format") is not None:
+            format = v.get("format")
+            v.pop("format")
+        try:
+            r = args.func(**v)
+        except Exception as e:
+            print("".join(traceback.format_exception(type(e), e, e.__traceback__)))
+            continue
+        print(format(r))
