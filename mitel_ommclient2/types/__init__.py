@@ -44,7 +44,7 @@ def cast_dict_to_childtype(t, d):
             if t.FIELDS[k] is not None and type(v) != t.FIELDS[k]:
                 d[k] = t.FIELDS[k](v)
         else:
-            raise KeyError()
+            raise KeyError("Key '{}' containing '{}' is unknown for {}".format(k, v, t.__name__))
 
     return t(d)
 
