@@ -22,7 +22,7 @@ def error_instead_exit(self, message):
 argparse.ArgumentParser.error = error_instead_exit
 
 def format_child_type(t):
-    return "\n".join(["{:<30}    {}".format(key, value) for key, value in t._attrs.items()])
+    return "    {}\n{}".format(t.__class__.__name__, "\n".join(["{:<30}    {}".format(key, value) for key, value in t._attrs.items()]))
 
 def format_list(v):
     return "\n\n\n\n".join(format_child_type(d) for d in v)
