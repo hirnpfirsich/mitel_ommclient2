@@ -96,7 +96,11 @@ class MonitoringStateType(EnumType):
 
 
 class PPRelTypeType(EnumType):
-    VALUES = None
+    VALUES = [
+        "Fixed",
+        "Dynamic",
+        "Unbound",
+    ]
 
 
 class AccountType(ChildType):
@@ -134,6 +138,18 @@ class PPDevType(ChildType):
         "ppDefaultProfileLoaded": bool,
         "subscribeToPARIOnly": bool,
         # undocumented
+        "ommId": str,
+        "ommIdAck": str,
+        "timeStampAdmin": int,
+        "timeStampRelation": int,
+        "timeStampRoaming": int,
+        "timeStampSubscription": int,
+        "autoCreate": bool,
+        "roaming": None, # value: 'RoamingComplete'
+        "modicType": str, # value: '01'
+        "locationData": str, # value: '000001000000'
+        "dectIeFixedId": str,
+        "subscriptionId": str,
         "ppnSec": int,
     }
 
@@ -213,4 +229,7 @@ class PPUserType(ChildType):
         "keyLockEnable": None,
         "keyLockPin": None,
         "keyLockTime": None,
+        "ppnOld": int,
+        "timeStampAdmin": int,
+        "timeStampRelation": int,
     }

@@ -70,6 +70,11 @@ if __name__ == "__main__":
     parser_exit = subparsers.add_parser("exit")
     parser_exit.set_defaults(func=exit)
 
+    parser_get_account = subparsers.add_parser("attach_user_device")
+    parser_get_account.add_argument("uid", type=int)
+    parser_get_account.add_argument("ppn", type=int)
+    parser_get_account.set_defaults(func=c.attach_user_device, format=format_list)
+
     parser_get_account = subparsers.add_parser("create_user")
     parser_get_account.add_argument("num")
     parser_get_account.set_defaults(func=c.create_user, format=format_child_type)

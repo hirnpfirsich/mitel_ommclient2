@@ -53,6 +53,32 @@ class OMMClient2:
         r = self.connection.request(m)
         r.raise_on_error()
 
+    def attach_user_device(self, uid, ppn):
+        """
+            Attach user to device
+
+            :param uid: User id
+            :param ppn: Device id
+
+            Requires ommsync=True
+        """
+        t_u = types.PPUserType()
+        t_u.uid = uid
+        t_u.ppn = ppn
+        t_u.relType = types.PPRelTypeType("Dynamic")
+        t_d = types.PPDevType()
+        t_d.ppn = ppn
+        t_d.uid = uid
+        t_d.relType = types.PPRelTypeType("Dynamic")
+        m = messages.SetPP()
+        m.childs.user = [t_u]
+        m.childs.pp = [t_d]
+        r = self.connection.request(m)
+        r.raise_on_error()
+        if r.childs.user is None:
+            return None
+        return r.childs.user[0], r.childs.pp[0]
+
     def create_user(self, num):
         """
             Create PP user

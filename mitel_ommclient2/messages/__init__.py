@@ -141,6 +141,7 @@ from .getppuser import GetPPUser, GetPPUserResp
 from .getpublickey import GetPublicKey, GetPublicKeyResp
 from .open import Open, OpenResp
 from .ping import Ping, PingResp
+from .setpp import SetPP, SetPPResp
 from .setppuser import SetPPUser, SetPPUserResp
 
 def construct(request):
