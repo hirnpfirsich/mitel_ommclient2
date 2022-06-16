@@ -134,6 +134,7 @@ def response_type(c):
     RESPONSE_TYPES[c.__name__] = c
     return c
 
+from .createppuser import CreatePPUser, CreatePPUserResp
 from .getaccount import GetAccount, GetAccountResp
 from .getppdev import GetPPDev, GetPPDevResp
 from .getppuser import GetPPUser, GetPPUserResp

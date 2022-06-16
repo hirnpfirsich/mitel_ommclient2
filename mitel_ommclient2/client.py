@@ -52,6 +52,23 @@ class OMMClient2:
         r = self.connection.request(m)
         r.raise_on_error()
 
+    def create_user(self, num):
+        """
+            Create PP user
+
+            :param num: User number
+        """
+        t = types.PPUserType()
+        t.num = num
+        m = messages.CreatePPUser()
+        m.childs.user = [t]
+        r = self.connection.request(m)
+        r.raise_on_error()
+        if r.childs.user is None:
+            return None
+        return r.childs.user[0]
+
+
     def get_account(self, id):
         """
             Get account
