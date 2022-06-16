@@ -105,6 +105,15 @@ class OMMClient2:
             # Determine next possible ppn
             next_ppn = int(pp.ppn) + 1
 
+    def get_publickey(self):
+        """
+            Get public key for encrypted values
+        """
+        m = messages.GetPublicKey()
+        r = self.connection.request(m)
+        r.raise_on_error()
+        return int(r.modulus, 16), int(r.exponent, 16)
+
     def get_user(self, uid):
         """
             Get PP user
@@ -185,7 +194,26 @@ class OMMClient2:
         m = messages.SetPPUser()
         m.childs.user = [t]
         r = self.connection.request(m)
+        r.raise_on_error()
+        if r.childs.user is None:
+            return None
+        return r.childs.user[0]
 
+    def set_user_sipauth(self, uid, sipAuthId, sipPw):
+        """
+            Set PP user sip credentials
+
+            :param uid: User id
+            :param sipAuthId: SIP user name
+            :param sipPw: Encrypted sip password
+        """
+        t = types.PPUserType()
+        t.uid = uid
+        t.sipAuthId = sipAuthId
+        t.sipPw = sipPw
+        m = messages.SetPPUser()
+        m.childs.user = [t]
+        r = self.connection.request(m)
         r.raise_on_error()
         if r.childs.user is None:
             return None

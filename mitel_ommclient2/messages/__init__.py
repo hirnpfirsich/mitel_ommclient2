@@ -137,6 +137,7 @@ def response_type(c):
 from .getaccount import GetAccount, GetAccountResp
 from .getppdev import GetPPDev, GetPPDevResp
 from .getppuser import GetPPUser, GetPPUserResp
+from .getpublickey import GetPublicKey, GetPublicKeyResp
 from .open import Open, OpenResp
 from .ping import Ping, PingResp
 from .setppuser import SetPPUser, SetPPUserResp
