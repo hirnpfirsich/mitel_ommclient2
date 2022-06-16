@@ -79,6 +79,19 @@ if __name__ == "__main__":
     parser_get_account.add_argument("num")
     parser_get_account.set_defaults(func=c.create_user, format=format_child_type)
 
+    parser_get_account = subparsers.add_parser("detach_user_device")
+    parser_get_account.add_argument("uid", type=int)
+    parser_get_account.add_argument("ppn", type=int)
+    parser_get_account.set_defaults(func=c.detach_user_device, format=format_list)
+
+    parser_get_account = subparsers.add_parser("detach_user_device_by_device")
+    parser_get_account.add_argument("ppn", type=int)
+    parser_get_account.set_defaults(func=c.detach_user_device_by_device, format=format_list)
+
+    parser_get_account = subparsers.add_parser("detach_user_device_by_user")
+    parser_get_account.add_argument("uid", type=int)
+    parser_get_account.set_defaults(func=c.detach_user_device_by_user, format=format_list)
+
     parser_get_account = subparsers.add_parser("get_account")
     parser_get_account.add_argument("id", type=int)
     parser_get_account.set_defaults(func=c.get_account, format=format_child_type)

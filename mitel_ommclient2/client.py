@@ -95,6 +95,58 @@ class OMMClient2:
             return None
         return r.childs.user[0]
 
+    def detach_user_device(self, uid, ppn):
+        """
+            Detach user from device
+
+            :param uid: User id
+            :param ppn: Device id
+
+            Requires ommsync=True
+        """
+        t_u = types.PPUserType()
+        t_u.uid = uid
+        t_u.ppn = 0
+        t_u.relType = types.PPRelTypeType("Unbound")
+        t_d = types.PPDevType()
+        t_d.ppn = ppn
+        t_d.uid = 0
+        t_d.relType = types.PPRelTypeType("Unbound")
+        m = messages.SetPP()
+        m.childs.user = [t_u]
+        m.childs.pp = [t_d]
+        r = self.connection.request(m)
+        r.raise_on_error()
+        if r.childs.user is None:
+            return None
+        return r.childs.user[0], r.childs.pp[0]
+
+    def detach_user_device_by_user(self, uid):
+        """
+            Detach user from device
+
+            This just requires the user id
+
+            :param uid: User id
+
+            Requires ommsync=True
+        """
+        u = self.get_user(uid)
+        return self.detach_user_device(uid, u.ppn)
+
+    def detach_user_device_by_device(self, ppn):
+        """
+            Detach user from device
+
+            This just requires the device id
+
+            :param ppn: Device id
+
+            Requires ommsync=True
+        """
+        d = self.get_device(ppn)
+        return self.detach_user_device(d.uid, ppn)
+
 
     def get_account(self, id):
         """
