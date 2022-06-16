@@ -39,12 +39,16 @@ class ChildType:
         return "{}({})".format(self.__class__.__name__, repr(self._attrs))
 
 def cast_dict_to_childtype(t, d):
+    errors = {} # collect unknown keys
     for k, v in d.items():
         if k in t.FIELDS.keys():
             if t.FIELDS[k] is not None and type(v) != t.FIELDS[k]:
                 d[k] = t.FIELDS[k](v)
         else:
-            raise KeyError("Key '{}' containing '{}' is unknown for {}".format(k, v, t.__name__))
+            errors[k] = v
+
+    if errors != {}:
+        raise KeyError("The following keys are unknown for '{}': {}".format(t.__name__, errors))
 
     return t(d)
 
