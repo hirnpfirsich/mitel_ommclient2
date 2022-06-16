@@ -63,6 +63,18 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(prog="ommclient2", add_help=False, exit_on_error=False)
     subparsers = parser.add_subparsers()
 
+    def add_parser(command_name, func, format=None, args={}):
+        subp = subparsers.add_parser(command_name, help=func.__doc__.strip().split("\n")[0], description=func.__doc__)
+        if format is not None:
+            subp.set_defaults(func=func, format=format)
+        else:
+            subp.set_defaults(func=func)
+
+        for a, t in args.items():
+            subp.add_argument(a, type=t)
+
+        return subp
+
     parser_get_account = subparsers.add_parser("encrypt")
     parser_get_account.add_argument("secret")
     parser_get_account.set_defaults(func=encrypt)
@@ -70,48 +82,45 @@ if __name__ == "__main__":
     parser_exit = subparsers.add_parser("exit")
     parser_exit.set_defaults(func=exit)
 
-    parser_get_account = subparsers.add_parser("attach_user_device")
-    parser_get_account.add_argument("uid", type=int)
-    parser_get_account.add_argument("ppn", type=int)
-    parser_get_account.set_defaults(func=c.attach_user_device, format=format_list)
+    parser_get_account = add_parser("attach_user_device", func=c.attach_user_device, format=format_list, args={
+        "uid": int,
+        "ppn": int,
+    })
 
-    parser_get_account = subparsers.add_parser("create_user")
-    parser_get_account.add_argument("num")
-    parser_get_account.set_defaults(func=c.create_user, format=format_child_type)
+    parser_get_account = add_parser("create_user", func=c.create_user, format=format_child_type, args={
+        "num": str,
+    })
 
-    parser_get_account = subparsers.add_parser("detach_user_device")
-    parser_get_account.add_argument("uid", type=int)
-    parser_get_account.add_argument("ppn", type=int)
-    parser_get_account.set_defaults(func=c.detach_user_device, format=format_list)
+    parser_get_account = add_parser("detach_user_device", func=c.detach_user_device, format=format_list, args={
+        "uid": int,
+        "ppn": int,
+    })
 
-    parser_get_account = subparsers.add_parser("detach_user_device_by_device")
-    parser_get_account.add_argument("ppn", type=int)
-    parser_get_account.set_defaults(func=c.detach_user_device_by_device, format=format_list)
+    parser_get_account = add_parser("detach_user_device_by_device", func=c.detach_user_device_by_device, format=format_list, args={
+        "ppn": int,
+    })
 
-    parser_get_account = subparsers.add_parser("detach_user_device_by_user")
-    parser_get_account.add_argument("uid", type=int)
-    parser_get_account.set_defaults(func=c.detach_user_device_by_user, format=format_list)
+    parser_get_account = add_parser("detach_user_device_by_user", func=c.detach_user_device_by_user, format=format_list, args={
+        "uid": int,
+    })
 
-    parser_get_account = subparsers.add_parser("get_account")
-    parser_get_account.add_argument("id", type=int)
-    parser_get_account.set_defaults(func=c.get_account, format=format_child_type)
+    parser_get_account = add_parser("get_account", func=c.get_account, format=format_child_type, args={
+        "id": int,
+    })
 
-    parser_get_account = subparsers.add_parser("get_device")
-    parser_get_account.add_argument("ppn", type=int)
-    parser_get_account.set_defaults(func=c.get_device, format=format_child_type)
+    parser_get_account = add_parser("get_device", func=c.get_device, format=format_child_type, args={
+        "ppn": int,
+    })
 
-    parser_get_account = subparsers.add_parser("get_devices")
-    parser_get_account.set_defaults(func=c.get_devices, format=format_list)
+    parser_get_account = add_parser("get_devices", func=c.get_devices, format=format_list)
 
-    parser_get_account = subparsers.add_parser("get_publickey")
-    parser_get_account.set_defaults(func=c.get_publickey)
+    parser_get_account = add_parser("get_publickey", func=c.get_publickey)
 
-    parser_get_account = subparsers.add_parser("get_user")
-    parser_get_account.add_argument("uid", type=int)
-    parser_get_account.set_defaults(func=c.get_user, format=format_child_type)
+    parser_get_account = add_parser("get_user", func=c.get_user, format=format_child_type, args={
+        "uid": int,
+    })
 
-    parser_get_account = subparsers.add_parser("get_users")
-    parser_get_account.set_defaults(func=c.get_users, format=format_list)
+    parser_get_account = add_parser("get_users", func=c.get_users, format=format_list)
 
     parser_help = subparsers.add_parser("help")
     parser_help.set_defaults(func=parser.format_help)
@@ -119,21 +128,21 @@ if __name__ == "__main__":
     parser_ping = subparsers.add_parser("ping")
     parser_ping.set_defaults(func=lambda *args, **kwargs: "pong" if c.ping(*args, **kwargs) else "error")
 
-    parser_get_account = subparsers.add_parser("set_user_name")
-    parser_get_account.add_argument("uid", type=int)
-    parser_get_account.add_argument("name")
-    parser_get_account.set_defaults(func=c.set_user_name)
+    parser_get_account = add_parser("set_user_name", func=c.set_user_name, args={
+        "uid": int,
+        "name": str,
+    })
 
-    parser_get_account = subparsers.add_parser("set_user_num")
-    parser_get_account.add_argument("uid", type=int)
-    parser_get_account.add_argument("num")
-    parser_get_account.set_defaults(func=c.set_user_num)
+    parser_get_account = add_parser("set_user_num", func=c.set_user_num, args={
+        "uid": int,
+        "num": str,
+    })
 
-    parser_get_account = subparsers.add_parser("set_user_sipauth")
-    parser_get_account.add_argument("uid", type=int)
-    parser_get_account.add_argument("sipAuthId")
-    parser_get_account.add_argument("sipPw")
-    parser_get_account.set_defaults(func=c.set_user_sipauth)
+    parser_get_account = add_parser("set_user_sipauth", func=c.set_user_sipauth, args={
+        "uid": int,
+        "sipAuthId": str,
+        "sipPw": str,
+    })
 
     if subcommand:
         try:
