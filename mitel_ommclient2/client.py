@@ -295,6 +295,30 @@ class OMMClient2:
             return None
         return r.childs.user[0]
 
+    def set_user_relation_dynamic(self, uid):
+        """
+            Set PP user to PP device relation to dynamic type
+
+            :param uid: User id
+        """
+        m = messages.SetPPUserDevRelation()
+        m.uid = uid
+        m.relType = types.PPRelTypeType("Dynamic")
+        r = self.connection.request(m)
+        r.raise_on_error()
+
+    def set_user_relation_fixed(self, uid):
+        """
+            Set PP user to PP device relation to fixed type
+
+            :param uid: User id
+        """
+        m = messages.SetPPUserDevRelation()
+        m.uid = uid
+        m.relType = types.PPRelTypeType("Fixed")
+        r = self.connection.request(m)
+        r.raise_on_error()
+
     def set_user_sipauth(self, uid, sipAuthId, sipPw):
         """
             Set PP user sip credentials

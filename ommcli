@@ -138,6 +138,14 @@ if __name__ == "__main__":
         "num": str,
     })
 
+    parser_get_account = add_parser("set_user_relation_dynamic", func=c.set_user_relation_dynamic, args={
+        "uid": int,
+    })
+
+    parser_get_account = add_parser("set_user_relation_fixed", func=c.set_user_relation_fixed, args={
+        "uid": int,
+    })
+
     parser_get_account = add_parser("set_user_sipauth", func=c.set_user_sipauth, args={
         "uid": int,
         "sipAuthId": str,
