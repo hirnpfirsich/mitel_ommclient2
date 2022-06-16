@@ -35,18 +35,20 @@ if __name__ == "__main__":
     connect_parser.add_argument("-n", dest="hostname", default="127.0.0.1")
     connect_parser.add_argument("-u", dest="username", default="omm")
     connect_parser.add_argument("-p", dest="password")
+    connect_parser.add_argument("--ommsync", dest="ommsync", action='store_true', help="Log in with ommsync mode")
     connect_parser.add_argument("subcommand", nargs="*")
     args = connect_parser.parse_args()
 
     hostname = args.hostname
     username = args.username
     password = args.password
+    ommsync = args.ommsync
     subcommand = args.subcommand
 
     if not password:
         password = getpass.getpass(prompt="OMM password for {}@{}:".format(username, hostname))
 
-    c = OMMClient2(hostname, username, password)
+    c = OMMClient2(hostname, username, password, ommsync=ommsync)
 
     def encrypt(secret):
         if rsa is None:

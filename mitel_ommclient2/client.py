@@ -48,7 +48,8 @@ class OMMClient2:
         m = messages.Open()
         m.username = self._username
         m.password = self._password
-        m.UserDeviceSyncClient = self._ommsync
+        if self._ommsync:
+            m.UserDeviceSyncClient = "true"
         r = self.connection.request(m)
         r.raise_on_error()
 
