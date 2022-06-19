@@ -6,15 +6,8 @@ from mitel_ommclient2.messages import GetAccount, Ping
 import time
 
 import argparse
-import base64
 import getpass
 import traceback
-
-try:
-    # This is is only dependency not from the modules inlcuded in python by default, so we make it optional
-    import rsa
-except ImportError:
-    rsa = None
 
 # exit handling with argparse is a bit broken even with exit_on_error=False, so we hack this
 def error_instead_exit(self, message):
@@ -50,16 +43,6 @@ if __name__ == "__main__":
 
     c = OMMClient2(hostname, username, password, ommsync=ommsync)
 
-    def encrypt(secret):
-        if rsa is None:
-            raise Exception("rsa module is required for excryption")
-        publickey = c.get_publickey()
-        pubkey = rsa.PublicKey(*publickey)
-        byte_secret = secret.encode('utf8')
-        byte_encrypt = rsa.encrypt(byte_secret, pubkey)
-        encrypt = base64.b64encode(byte_encrypt).decode("utf8")
-        return encrypt
-
     parser = argparse.ArgumentParser(prog="ommclient2", add_help=False, exit_on_error=False)
     subparsers = parser.add_subparsers()
 
@@ -74,10 +57,6 @@ if __name__ == "__main__":
             subp.add_argument(a, type=t)
 
         return subp
-
-    parser_get_account = subparsers.add_parser("encrypt")
-    parser_get_account.add_argument("secret")
-    parser_get_account.set_defaults(func=encrypt)
 
     parser_exit = subparsers.add_parser("exit")
     parser_exit.set_defaults(func=exit)
@@ -102,6 +81,10 @@ if __name__ == "__main__":
 
     parser_get_account = add_parser("detach_user_device_by_user", func=c.detach_user_device_by_user, format=format_list, args={
         "uid": int,
+    })
+
+    parser_get_account = add_parser("encrypt", func=c.encrypt, args={
+        "secret": str,
     })
 
     parser_get_account = add_parser("get_account", func=c.get_account, format=format_child_type, args={

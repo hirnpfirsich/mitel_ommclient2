@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 
+import base64
+try:
+    # This is is only dependency not from the modules inlcuded in python by default, so we make it optional
+    import rsa
+except ImportError:
+    rsa = None
+
 from .connection import Connection
 from . import exceptions
 from . import messages
@@ -146,6 +153,24 @@ class OMMClient2:
         """
         d = self.get_device(ppn)
         return self.detach_user_device(d.uid, ppn)
+
+    def encrypt(self, secret):
+        """
+            Encrypt secret for OMM
+
+            Required rsa module to be installed
+
+            :param secret: String to encrypt
+        """
+
+        if rsa is None:
+            raise Exception("rsa module is required for excryption")
+        publickey = self.get_publickey()
+        pubkey = rsa.PublicKey(*publickey)
+        byte_secret = secret.encode('utf8')
+        byte_encrypt = rsa.encrypt(byte_secret, pubkey)
+        encrypt = base64.b64encode(byte_encrypt).decode("utf8")
+        return encrypt
 
     def find_devices(self, filter):
         """
@@ -354,12 +379,12 @@ class OMMClient2:
 
             :param uid: User id
             :param sipAuthId: SIP user name
-            :param sipPw: Encrypted sip password
+            :param sipPw: Plain text password
         """
         t = types.PPUserType()
         t.uid = uid
         t.sipAuthId = sipAuthId
-        t.sipPw = sipPw
+        t.sipPw = self.encrypt(sipPw)
         m = messages.SetPPUser()
         m.childs.user = [t]
         r = self.connection.request(m)
