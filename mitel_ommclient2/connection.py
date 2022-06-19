@@ -55,8 +55,11 @@ class Connection:
             if select.select([self._socket], [], []) != ([], [], []):
                 # wait for data availiable
                 while True:
-                    # fill buffer with one message
-                    data = self._socket.recv(1024)
+                    try:
+                        # fill buffer with one message
+                        data = self._socket.recv(1024)
+                    except BlockingIOError:
+                        continue
 
                     if not data:
                         # buffer is empty
