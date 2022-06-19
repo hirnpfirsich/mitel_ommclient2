@@ -147,6 +147,20 @@ class OMMClient2:
         d = self.get_device(ppn)
         return self.detach_user_device(d.uid, ppn)
 
+    def find_devices(self, filter):
+        """
+            Get all devices matching a filter
+
+            :param filter: function taking one parameter which is a device, returns True to keep, False to discard
+
+            Usage::
+
+                >>> c.find_devices(lambda d: d.relType == mitel_ommclient2.types.PPRelTypeType("Unbound"))
+        """
+
+        for d in self.get_devices():
+            if filter(d):
+                yield d
 
     def get_account(self, id):
         """

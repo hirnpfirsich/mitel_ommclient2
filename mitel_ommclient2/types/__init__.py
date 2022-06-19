@@ -72,6 +72,9 @@ class EnumType:
     def __repr__(self):
         return "{}({})".format(self.__class__.__name__, repr(self.value))
 
+    def __eq__(self, other):
+        return isinstance(other, type(self)) and self.value == other.value
+
 
 class CallForwardStateType(EnumType):
     VALUES = [
