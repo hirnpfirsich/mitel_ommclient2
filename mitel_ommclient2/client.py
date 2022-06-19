@@ -162,6 +162,21 @@ class OMMClient2:
             if filter(d):
                 yield d
 
+    def find_users(self, filter):
+        """
+            Get all users matching a filter
+
+            :param filter: function taking one parameter which is a user, returns True to keep, False to discard
+
+            Usage::
+
+                >>> c.find_users(lambda u: u.num.startswith("9998"))
+        """
+
+        for u in self.get_users():
+            if filter(u):
+                yield u
+
     def get_account(self, id):
         """
             Get account
