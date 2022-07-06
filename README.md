@@ -37,6 +37,15 @@ r = c.connection.request(m)
 
 Consult class documentation for more in depth examples and options.
 
+## Interactive CLI
+
+The package installs a script called `ommclient2`.
+This allowes basic interactive testing of the library.
+
+```
+ommclient2 --help
+```
+
 ## Attribution
 
 This software is inspired by `python-mitel` by Thomas and n-st.
