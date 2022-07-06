@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
-from mitel_ommclient2 import OMMClient2
-from mitel_ommclient2.exceptions import ENoEnt
-from mitel_ommclient2.messages import GetAccount, Ping
-import time
-
 import argparse
 import getpass
+import time
 import traceback
+
+from . import OMMClient2
+from .exceptions import ENoEnt
+from .messages import GetAccount, Ping
 
 # exit handling with argparse is a bit broken even with exit_on_error=False, so we hack this
 def error_instead_exit(self, message):
@@ -22,8 +22,7 @@ def format_list(v):
 
     return fl
 
-if __name__ == "__main__":
-
+def main():
     connect_parser = argparse.ArgumentParser(prog='ommclient2')
     connect_parser.add_argument("-n", dest="hostname", default="127.0.0.1")
     connect_parser.add_argument("-u", dest="username", default="omm")
@@ -178,3 +177,6 @@ if __name__ == "__main__":
             print("".join(traceback.format_exception(type(e), e, e.__traceback__)))
             continue
         print(format(r))
+
+if __name__ == "__main__":
+    main()

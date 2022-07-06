@@ -23,5 +23,8 @@ crypt = [
   "rsa",
 ]
 
+[project.scripts]
+ommclient2 = "mitel_ommclient2.cli:main"
+
 [project.urls]
 "Source" = "https://git.clerie.de/clerie/mitel_ommclient2"
