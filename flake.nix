@@ -14,6 +14,15 @@
 
         src = ./.;
 
+        outputs = [
+          "out"
+          "doc"
+        ];
+
+        nativeBuildInputs = [
+          pkgs.python3Packages.sphinxHook
+        ];
+
         format = "pyproject";
 
         buildInputs = [ pkgs.python3Packages.hatchling ];
