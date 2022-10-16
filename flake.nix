@@ -30,6 +30,15 @@
 
         pythonImportsCheck = [ "mitel_ommclient2" ];
       };
+      default = self.packages.x86_64-linux.mitel-ommclient2;
+    };
+
+    apps.x86_64-linux = {
+      ommclient2 = {
+        type = "app";
+        program = self.packages.x86_64-linux.mitel-ommclient2 + "/bin/ommclient2";
+      };
+      default = self.apps.x86_64-linux.ommclient2;
     };
 
     hydraJobs = {
