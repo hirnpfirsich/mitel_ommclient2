@@ -26,6 +26,7 @@ class Connection:
         self._host = host
         self._port = port
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self._socket.settimeout(2)
 
         self._seq = 0 # state of the sequence number generator
         self._requests = {} # waiting area for pending responses
