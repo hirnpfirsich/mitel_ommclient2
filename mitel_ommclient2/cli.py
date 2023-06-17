@@ -6,7 +6,7 @@ import time
 import traceback
 
 from . import OMMClient2
-from .exceptions import ENoEnt
+from .exceptions import EAuth, ENoEnt
 from .messages import GetAccount, Ping
 
 # exit handling with argparse is a bit broken even with exit_on_error=False, so we hack this
@@ -40,7 +40,14 @@ def main():
     if not password:
         password = getpass.getpass(prompt="OMM password for {}@{}:".format(username, hostname))
 
-    c = OMMClient2(hostname, username, password, ommsync=ommsync)
+    try:
+        c = OMMClient2(hostname, username, password, ommsync=ommsync)
+    except EAuth:
+        print("Authentication failed")
+        exit(1)
+    except TimeoutError:
+        print("OMM unreachable")
+        exit(1)
 
     parser = argparse.ArgumentParser(prog="ommclient2", add_help=False, exit_on_error=False)
     subparsers = parser.add_subparsers()
