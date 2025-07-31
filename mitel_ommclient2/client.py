@@ -217,6 +217,18 @@ class OMMClient2:
             return None
         return r.childs.account[0]
 
+    def delete_pp_user(self, id):
+        """
+            Delete PP user
+
+            :param id: User id
+        """
+        m = messages.DeletePPUser()
+        m.uid = id
+        r = self.connection.request(m)
+        r.raise_on_error()
+
+
     def get_device(self, ppn):
         """
             Get PP device

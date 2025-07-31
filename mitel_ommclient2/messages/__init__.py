@@ -144,6 +144,7 @@ from .ping import Ping, PingResp
 from .setpp import SetPP, SetPPResp
 from .setppuser import SetPPUser, SetPPUserResp
 from .setppuserdevrelation import SetPPUserDevRelation, SetPPUserDevRelationResp
+from .deleteppuser import DeletePPUser, DeletePPUserResp
 
 def construct(request):
     """
