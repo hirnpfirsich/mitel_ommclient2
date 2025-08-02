@@ -139,6 +139,8 @@ from .getaccount import GetAccount, GetAccountResp
 from .getppdev import GetPPDev, GetPPDevResp
 from .getppuser import GetPPUser, GetPPUserResp
 from .getpublickey import GetPublicKey, GetPublicKeyResp
+from .getdectsubscriptionmode import GetDECTSubscriptionMode, GetDECTSubscriptionModeResp
+from .setdectsubscriptionmode import SetDECTSubscriptionMode, SetDECTSubscriptionModeResp
 from .open import Open, OpenResp
 from .ping import Ping, PingResp
 from .setpp import SetPP, SetPPResp

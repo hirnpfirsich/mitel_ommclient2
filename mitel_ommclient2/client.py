@@ -290,6 +290,17 @@ class OMMClient2:
             return None
         return r.childs.user[0]
 
+    def get_subscription_mode(self):
+        """
+        Get DECT Subscription Mode
+
+        :returns, return: Off, Configured or Wildcard
+        """
+        m = messages.GetDECTSubscriptionMode()
+        r = self.connection.request(m)
+        r.raise_on_error()
+        return r.mode
+
     def get_users(self):
         """
             Get all PP users
@@ -404,3 +415,16 @@ class OMMClient2:
         if r.childs.user is None:
             return None
         return r.childs.user[0]
+
+    def set_subscription_mode(self, mode, timeout=3):
+        """
+        Set DECT Subscription Mode
+
+        :param mode: Off, Configured or Wildcard
+        :param timeout: timeout (in minutes) for Wildcard subscription
+        """
+        m = messages.SetDECTSubscriptionMode()
+        m.mode = mode
+        m.timeout = timeout
+        r = self.connection.request(m)
+        r.raise_on_error()
