@@ -58,8 +58,8 @@ class Connection:
                 while True:
                     try:
                         # fill buffer with one message
-                        data = self._socket.recv(1024)
-                    except BlockingIOError:
+                        data = self._socket.read(1024)
+                    except ssl.SSLWantReadError:
                         continue
 
                     if not data:
@@ -162,7 +162,13 @@ class SSLConnection(Connection):
         See :class:`Connection`
     """
 
-    def __init__(self, host, port=12622):
+    def __init__(self, host, verify_cert=True, port=12622):
         super().__init__(host, port)
 
-        self._socket = ssl.wrap_socket(self._socket)
+        context = ssl.create_default_context()
+
+        if not verify_cert:
+            context.check_hostname = False
+            context.verify_mode = ssl.VerifyMode.CERT_NONE
+
+        self._socket = context.wrap_socket(self._socket, server_hostname=host)

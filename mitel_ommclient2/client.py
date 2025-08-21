@@ -7,7 +7,7 @@ try:
 except ImportError:
     rsa = None
 
-from .connection import Connection
+from .connection import SSLConnection
 from . import exceptions
 from . import messages
 from . import types
@@ -35,7 +35,7 @@ class OMMClient2:
             >>> r = s.connection.request(mitel_ommclient2.messages.Ping())
     """
 
-    def __init__(self, host, username, password, port=None, ommsync=False):
+    def __init__(self, host, username, password, port=None, ommsync=False, verify_cert=True):
         self._host = host
         self._username = username
         self._password = password
@@ -44,11 +44,12 @@ class OMMClient2:
 
         # prepare connect arguments
         kwargs = {}
+        kwargs["verify_cert"] = verify_cert
         if self._port is not None:
             kwargs["port"] = self._port
 
         # Connect
-        self.connection = Connection(self._host, **kwargs)
+        self.connection = SSLConnection(self._host, **kwargs)
         self.connection.connect()
 
         # Login
