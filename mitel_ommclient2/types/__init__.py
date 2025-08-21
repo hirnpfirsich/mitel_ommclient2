@@ -218,6 +218,9 @@ class PPUserType(ChildType):
         "fixedSipPort": int,
         "calculatedSipPort": int,
         # undocumented
+        "altDisplayNum": str,
+        "sipProfileId": int,
+        "pickupGroupNum": str,
         "uidSec": int,
         "permanent": bool,
         "lang": None,
